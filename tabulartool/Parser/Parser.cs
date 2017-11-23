@@ -1,10 +1,27 @@
-﻿using System.Linq;
+﻿using MattyControls;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace TabularTool
 {
     public abstract class Parser
     {
+        public virtual bool IsInitialized { get; protected set; }
+
+        public virtual Control[] Controls { get; protected set; }
+
+        public virtual void InitControls(MattyUserControl userControl) => IsInitialized = true;
+
+        public virtual void RemoveControls(MattyUserControl userControl) {
+            foreach (var c in Controls) {
+                userControl.Controls.Remove(c);
+                c.Dispose();
+            }
+
+            IsInitialized = false;
+        }
+
         public abstract TabularData Parse(string input);
 
         protected bool StartsWith(string line, string start) {

@@ -1,20 +1,21 @@
 ﻿using MattyControls;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace TabularTool
 {
     class CompilerControl : MattyUserControl
     {
-        private Btn _btnPrevious;
+        private Btn _btnExit, _btnPrevious;
         private Db _dbCompiler;
         private RichTb _tbOutput;
 
         public TabularData Data { private get; set; }
 
         public CompilerControl() {
-            _btnPrevious = new Btn("Previous", this);
-            _btnPrevious.Click += (o, e) => { ShowUserControl<EditDataControl>(); };
+            _btnExit = new Btn("Exit", this, (o, e) => { Application.Exit(); });
+            _btnPrevious = new Btn("Previous", this, (o, e) => { ShowUserControl<EditDataControl>(); });
 
             _dbCompiler = new Db(this);
             _dbCompiler.SelectedIndexChanged += OnCompilerChange;
@@ -29,7 +30,8 @@ namespace TabularTool
         public override void OnResize() {
             _dbCompiler.PositionTopRightInside(this);
 
-            _btnPrevious.PositionBottomRightInside(this);
+            _btnExit.PositionBottomRightInside(this);
+            _btnPrevious.PositionLeftOf(_btnExit);
 
             _tbOutput.PositionBelow(_dbCompiler);
             _tbOutput.StretchLeftInside(this);

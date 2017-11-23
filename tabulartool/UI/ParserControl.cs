@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using MattyControls;
 
@@ -10,21 +11,8 @@ namespace TabularTool
         private Db _dbParser;
         private RichTb _tbInput;
 
-        // These are specific for the newline parser. Since that currently is the only one we have, I'm going to leave it here.
-        private Tb _tbColumnRegex;
-        private Db _dbColumnPresets;
-        private (string name, string regex)[] ColumnPresets {
-            get => new[] {
-                ("Whitespace", @"\ \ +|\ *\t+\ *"),
-                ("Commas", @",\s*"),
-                ("Semicolons", @";"),
-                ("Vertical bars", @"|")
-            };
-        }
-
         public ParserControl() {
-            _btnNext = new Btn("Next", this);
-            _btnNext.Click += OnNextClick;
+            _btnNext = new Btn("Next", this, OnNextClick);
 
             _dbParser = new Db(this);
             _dbParser.SelectedIndexChanged += OnParserChange;
@@ -34,21 +22,12 @@ namespace TabularTool
             _tbInput = new RichTb(this);
             _tbInput.Multiline = true;
             _tbInput.AddLabel("Input:", false);
+            _tbInput.Font = new Font(FontFamily.GenericMonospace, _tbInput.Font.Size);
 
-            InitColumnControls();
-        }
-
-        private void InitColumnControls() {
-            _tbColumnRegex = new Tb(this);
-            _dbColumnPresets = new Db(this);
-            _dbColumnPresets.Items.AddRange(ColumnPresets.Select(p => p.name).ToArray());
-            _dbColumnPresets.SelectedIndexChanged += (o, e) => { }; // TODO
         }
 
         public override void OnResize() {
             _dbParser.PositionTopRightInside(this);
-            _dbColumnPresets.PositionLeftOf(_dbParser);
-            _tbColumnRegex.PositionLeftOf(_dbColumnPresets);
 
             _btnNext.PositionBottomRightInside(this);
 
@@ -57,6 +36,9 @@ namespace TabularTool
             _tbInput.StretchRightInside(this);
             _tbInput.StretchDownTo(_btnNext);
             _tbInput.Label.PositionAbove(_tbInput);
+
+            var parserControls = Settings.Get.SelectedParser.Value.Controls.ToList();
+            ControlHelpers.AnchorLoop(parserControls, c => c.PositionRightOf(_tbInput.Label), (o, c) => c.PositionRightOf(o));
         }
 
         public override void OnShow() {
@@ -71,7 +53,11 @@ namespace TabularTool
         }
 
         private void OnParserChange(object o, EventArgs e) {
+            if (Settings.Get.SelectedParser.Value.IsInitialized) {
+                Settings.Get.SelectedParser.Value.RemoveControls(this);
+            }
             Settings.Get.SelectedParser = Parsers.All[_dbParser.SelectedIndex];
+            Settings.Get.SelectedParser.Value.InitControls(this);
         }
     }
 }

@@ -10,11 +10,8 @@ namespace TabularTool
         public TabularData Data { private get; set; }
 
         public EditDataControl() {
-            _btnNext = new Btn("Next", this);
-            _btnNext.Click += OnNextClick;
-
-            _btnPrevious = new Btn("Previous", this);
-            _btnPrevious.Click += (o, e) => { ShowUserControl<ParserControl>(); };
+            _btnNext = new Btn("Next", this, OnNextClick);
+            _btnPrevious = new Btn("Previous", this, (o, e) => { ShowUserControl<ParserControl>(); });
         }
 
         public override void OnResize() {
