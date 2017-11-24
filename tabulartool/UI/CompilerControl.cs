@@ -1,5 +1,6 @@
 ﻿using MattyControls;
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -14,8 +15,8 @@ namespace TabularTool
         public TabularData Data { private get; set; }
 
         public CompilerControl() {
-            _btnExit = new Btn("Exit", this, (o, e) => { Application.Exit(); });
             _btnPrevious = new Btn("Previous", this, (o, e) => { ShowUserControl<EditDataControl>(); });
+            _btnExit = new Btn("Exit", this, (o, e) => { Application.Exit(); });
 
             _dbCompiler = new Db(this);
             _dbCompiler.SelectedIndexChanged += OnCompilerChange;
@@ -25,6 +26,7 @@ namespace TabularTool
             _tbOutput = new RichTb(this);
             _tbOutput.Multiline = true;
             _tbOutput.AddLabel("Output:", false);
+            _tbOutput.Font = new Font(FontFamily.GenericMonospace, _tbOutput.Font.Size);
         }
 
         public override void OnResize() {
@@ -42,10 +44,19 @@ namespace TabularTool
 
         public override void OnShow() {
             _tbOutput.Select();
+            Compile();
         }
 
         private void OnCompilerChange(object o, EventArgs e) {
             Settings.Get.SelectedCompiler = Compilers.All[_dbCompiler.SelectedIndex];
+            if (_tbOutput != null && Visible) {
+                Compile();
+            }
+        }
+
+        private void Compile() {
+            var compiler = Settings.Get.SelectedCompiler.Value;
+            _tbOutput.Text = compiler.Compile(Data);
         }
     }
 }

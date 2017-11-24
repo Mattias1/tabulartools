@@ -8,14 +8,14 @@ namespace TabularTool
 
         protected virtual bool UseBrackets => true;
 
-        protected TabularData BuilderEntity { get; set; }
+        protected TabularData Data { get; set; }
 
         protected StringBuilder StringBuilder { get; set; }
 
         private int _indent;
 
-        public virtual string Compile(TabularData entity) {
-            BuilderEntity = entity;
+        public virtual string Compile(TabularData data) {
+            Data = data;
             StringBuilder = new StringBuilder();
 
             Compile();

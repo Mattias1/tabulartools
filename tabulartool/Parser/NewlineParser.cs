@@ -1,4 +1,5 @@
 ﻿using MattyControls;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -39,13 +40,22 @@ namespace TabularTool
         }
 
         public override TabularData Parse(string input) {
-            return new TabularData();
+            var lines = SplitLines(input);
+            var regex = new Regex(_tbColumnRegex.Text);
+
+            var rows = lines.Select(l => regex.Replace(l, "\n").Split('\n'));
+            rows = FilterWhitespace(rows);
+            return TabularData.FromRows(rows);
         }
 
         private string[] SplitLines(string input) {
             return input
                 .Replace("\r\n", "\n")
-                .Split(new char[] { '\n' });
+                .Split('\n');
+        }
+
+        private IEnumerable<T> FilterWhitespace<T>(IEnumerable<T> rows) where T : IEnumerable<string> {
+            return rows.Where(l => l.Any(s => !string.IsNullOrWhiteSpace(s)));
         }
     }
 }
