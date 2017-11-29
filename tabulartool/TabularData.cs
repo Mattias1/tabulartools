@@ -7,6 +7,8 @@ namespace TabularTool
     {
         private string[,] _data;
 
+        public bool FirstRowIsHeader { get; set; }
+
         public string this[int x, int y] => _data[x, y];
         public int Width => _data.GetLength(0);
         public int Height => _data.GetLength(1);
@@ -17,10 +19,11 @@ namespace TabularTool
         public IEnumerable<IEnumerable<string>> Columns => Enumerable.Range(0, Width).Select(Column);
         public IEnumerable<IEnumerable<string>> Rows => Enumerable.Range(0, Height).Select(Row);
 
-        public TabularData() : this(new string[0, 0]) { }
+        public TabularData() : this(new string[0, 0], false) { }
 
-        public TabularData(string[,] data) {
+        public TabularData(string[,] data, bool firstRowIsHeader) {
             _data = data;
+            FirstRowIsHeader = firstRowIsHeader;
         }
 
         public static TabularData FromRows(IEnumerable<IEnumerable<string>> rows) {
@@ -37,7 +40,9 @@ namespace TabularTool
                 }
             }
 
-            return new TabularData(data);
+            bool firstRowIsHeader = Settings.Get.FirstRowIsHeader;
+
+            return new TabularData(data, firstRowIsHeader);
         }
     }
 }

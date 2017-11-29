@@ -15,6 +15,10 @@ namespace TabularTool
                     StringBuilder.Append(val.PadRight(widths[x]));
                 }
                 StringBuilder.AppendLine();
+
+                if (Data.FirstRowIsHeader && y == 0) {
+                    StringBuilder.AppendLine("".PadRight(widths.Sum(), '-'));
+                }
             }
         }
     }
