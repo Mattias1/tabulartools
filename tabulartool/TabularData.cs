@@ -32,7 +32,6 @@ namespace TabularTool
             int width = raw.Max(r => r.Count());
 
             string[,] data = new string[width, height];
-
             for (int y = 0; y < height; y++) {
                 var row = raw[y];
                 for (int x = 0; x < width; x++) {
